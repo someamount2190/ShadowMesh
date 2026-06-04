@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+ (API 31+) data extraction rules.
+    Controls both cloud backup and device-to-device (D2D) transfer.
+
+    Policy:
+      - No cloud backup of any SHADOWMESH data.
+      - No D2D transfer of any SHADOWMESH data.
+      - EncryptedSharedPreferences files are explicitly excluded: the Keystore
+        master key is never backed up, so a restored encrypted prefs file would
+        be unreadable and would corrupt the app state on the target device.
+      - SQLCipher database files are excluded: the database key lives in the
+        Keystore and is never backed up; a restored database without its key
+        is an opaque encrypted blob that breaks the app on the target device.
+      - disableIfNoEncryptionCapabilities omitted in favour of full exclusion:
+        we do not permit backup under any condition, not just unencrypted backup.
+-->
+<data-extraction-rules>
+
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <!-- Exclude everything under the app's data directory. -->
+        <exclude domain="root" path="."/>
+        <exclude domain="file" path="."/>
+        <exclude domain="database" path="."/>
+        <exclude domain="sharedpref" path="."/>
+        <exclude domain="external" path="."/>
+
+        <!-- Explicit named exclusions for belt-and-suspenders. -->
+        <!-- SQLCipher database — key not backed up, restoring breaks the app -->
+        <exclude domain="database" path="shadowmesh.db"/>
+        <exclude domain="database" path="shadowmesh.db-wal"/>
+        <exclude domain="database" path="shadowmesh.db-shm"/>
+        <!-- NSC database -->
+        <exclude domain="database" path="shadowmesh_nsc.db"/>
+        <!-- EncryptedSharedPreferences — Keystore wrapping key not backed up -->
+        <exclude domain="sharedpref" path="shadowmesh_pin_prefs.xml"/>
+        <exclude domain="sharedpref" path="shadowmesh_channel_prefs.xml"/>
+        <exclude domain="sharedpref" path="shadowmesh_node_prefs.xml"/>
+        <exclude domain="sharedpref" path="shadowmesh_vpn_consent.xml"/>
+        <!-- Keybox revocation cache — non-sensitive; excluded so a restored device
+             fetches a fresh list rather than using a potentially stale snapshot. -->
+        <exclude domain="sharedpref" path="shadowmesh_revocation.xml"/>
+        <!-- WorkManager internals -->
+        <exclude domain="database" path="androidx.work.workdb"/>
+    </cloud-backup>
+
+    <device-transfer>
+        <!-- Same policy as cloud backup — no D2D transfer of any SHADOWMESH state. -->
+        <exclude domain="root" path="."/>
+        <exclude domain="file" path="."/>
+        <exclude domain="database" path="."/>
+        <exclude domain="sharedpref" path="."/>
+        <exclude domain="external" path="."/>
+    </device-transfer>
+
+</data-extraction-rules>

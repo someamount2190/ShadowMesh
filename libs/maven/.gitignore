@@ -1,0 +1,14 @@
+# Vendored Maven artifacts — populated by scripts/vendor_deps.py
+# Binary artifacts are large and change rarely; exclude from git history.
+# To include them (for true air-gap builds), remove these rules.
+*.jar
+*.aar
+*.pom
+*.sha256
+*.sha1
+*.md5
+*.module
+
+# Keep the directory structure and documentation
+!README.md
+!.gitkeep

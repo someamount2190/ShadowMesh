@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ── Permissions ──────────────────────────────────────────────────── -->
+
+    <!-- NFC — required="false" so the APK installs on devices without NFC.
+         The app detects NFC availability at runtime via NfcTransport.detectFallback()
+         and falls back to BLE proximity or QR-only with a warning. -->
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
+
+    <!-- Bluetooth — for BLE nudge transport and BLE proximity fallback bootstrap. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+    <!-- Pre-API 31 Bluetooth permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <!-- WiFi Direct -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- Android 13+ requires NEARBY_WIFI_DEVICES for all WifiP2pManager calls.
+         neverForLocation: WiFi Direct peer discovery does not imply location inference. -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"/>
+
+    <!-- Foreground service — mesh process keepalive -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+
+    <!-- Battery — Doze exemption request and OEM exemption screen navigation -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
+    <!-- VPN — one-time consent for the onion circuit tunnel -->
+    <!-- No explicit permission needed: VpnService.prepare() handles the consent dialog.
+         BIND_VPN_SERVICE is declared on the service element below. -->
+
+    <!-- Camera — QR code scanning -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+
+    <!-- Biometric — BiometricKeyManager -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+
+    <!-- Internet — DHT seed contact and STUN hole-punching -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+    <!-- POST_NOTIFICATIONS — foreground service notification (API 33+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- RECEIVE_BOOT_COMPLETED is intentionally absent from this manifest.
+         WorkManager's library manifest (androidx.work:work-runtime) declares
+         this permission and registers its own BootBroadcastReceiver automatically
+         via manifest merge. Declaring it here as well is redundant and misleading
+         (it implies this app registers a boot receiver, which it does not). -->
+
+    <!-- ── Application ───────────────────────────────────────────────────── -->
+
+    <!-- Backup fully disabled: EncryptedSharedPreferences and SQLCipher databases must
+         never be backed up — Keystore wrapping keys are excluded from backups and a
+         restored encrypted file without its key corrupts the app on the target device. -->
+    <application
+        android:name=".ShadowMeshApplication"
+        android:label="SHADOWMESH"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+
+        android:theme="@style/Theme.ShadowMesh"
+        android:supportsRtl="true"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="false">
+
+        <!-- ── Activities ─────────────────────────────────────────────────── -->
+
+        <!-- Main activity: single-Activity, hosts all navigation fragments. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- NFC foreground dispatch: routes NFC intents to the active
+                 bootstrap session when MainActivity is in the foreground. -->
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter"/>
+        </activity>
+
+        <!-- Cover activity: shown after panic wipe. Appears to be a generic system utility.
+             Separate task affinity so it does not appear alongside SHADOWMESH in recents.
+             excludeFromRecents: hides it from the recents screen entirely. -->
+        <activity
+            android:name=".CoverActivity"
+            android:exported="false"
+            android:taskAffinity="mesh.shadowmesh.cover"
+            android:excludeFromRecents="true"
+            android:label="File Manager"
+            android:icon="@mipmap/ic_cover"
+            android:theme="@style/Theme.ShadowMesh.Cover"/>
+
+        <!-- ── Services ───────────────────────────────────────────────────── -->
+
+        <!-- Mesh foreground service: keeps DHT + gossip + circuit alive in background.
+             Foreground service type: connectedDevice — correct for P2P networking.
+             Does not require location permission on API 29+. -->
+        <service
+            android:name=".ShadowMeshForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"/>
+
+        <!-- VPN service: onion circuit tunnel.
+             BIND_VPN_SERVICE permission required by Android for all VpnService subclasses. -->
+        <service
+            android:name="mesh.shadowmesh.platform.ShadowMeshVpnService"
+            android:exported="false"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
+
+        <!-- HCE service: NFC challenge-response for TRUST_PHYSICAL bootstrap.
+             Routes taps that select the SHADOWMESH AID to ShadowMeshHceService. -->
+        <service
+            android:name=".ShadowMeshHceService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.cardemulation.host_apdu_service"
+                android:resource="@xml/apduservice"/>
+        </service>
+
+        <!-- APK integrity WorkManager worker: checks signing cert every 4 hours. -->
+        <!-- WorkManager workers are registered via their class name — no manifest entry needed
+             for CoroutineWorker. WorkManager's initializer in ShadowMeshApplication handles it. -->
+
+    </application>
+
+</manifest>
