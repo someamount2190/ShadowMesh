@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme for ShadowMesh.
+         AppCompatActivity requires a Theme.AppCompat parent.
+         NoActionBar: Compose manages its own UI chrome; we don't want a native ActionBar.
+         DayNight: respects system dark/light mode automatically. -->
+    <style name="Theme.ShadowMesh" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Edge-to-edge: let Compose draw behind system bars -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <!-- Cover activity: appears to be a plain system utility, no custom chrome -->
+    <style name="Theme.ShadowMesh.Cover" parent="Theme.AppCompat.DayNight.NoActionBar"/>
+</resources>

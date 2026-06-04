@@ -1,0 +1,116 @@
+[versions]
+agp             = "8.3.2"
+kotlin          = "1.9.23"
+ksp             = "1.9.23-1.0.19"
+hilt            = "2.51.1"
+hiltAndroidx    = "1.2.0"
+coroutines      = "1.8.0"
+room            = "2.6.1"
+workManager     = "2.9.0"
+biometric       = "1.2.0-alpha05"
+sqlcipher       = "4.5.6"
+sqlite          = "2.4.0"
+liboqs          = "0.3.0"
+lazysodiumJava    = "5.1.4"
+lazysodiumAndroid = "5.1.0"
+bcprov            = "1.78.1"
+securityCrypto    = "1.1.0-alpha06"
+androidxTest      = "1.5.0"
+androidxTestExt   = "1.1.5"
+androidxRunner    = "1.5.2"
+appcompat         = "1.6.1"
+guava           = "33.1.0-android"
+backblaze       = "1.6.0"
+junit           = "4.13.2"
+mockk           = "1.13.10"
+kotest          = "5.8.1"
+coreKtx         = "1.13.0"
+# Jetpack Compose — added for feature:ui
+composeBom      = "2024.05.00"
+composeActivity = "1.9.0"
+composeNav      = "2.7.7"
+composeLifecycle= "2.7.0"
+composeHilt     = "1.2.0"
+# ZXing — QR code encoding for PhysicalExchangeStep in feature:ui
+zxing           = "3.5.3"
+zxing-android   = "4.3.0"
+
+[libraries]
+# Kotlin
+kotlin-stdlib            = { module = "org.jetbrains.kotlin:kotlin-stdlib",                     version.ref = "kotlin"       }
+coroutines-core          = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",          version.ref = "coroutines"   }
+coroutines-android       = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android",       version.ref = "coroutines"   }
+coroutines-test          = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test",          version.ref = "coroutines"   }
+
+# Hilt
+hilt-android             = { module = "com.google.dagger:hilt-android",                         version.ref = "hilt"         }
+hilt-compiler            = { module = "com.google.dagger:hilt-compiler",                        version.ref = "hilt"         }
+hilt-work                = { module = "androidx.hilt:hilt-work",                                version.ref = "hiltAndroidx" }
+hilt-work-compiler       = { module = "androidx.hilt:hilt-compiler",                            version.ref = "hiltAndroidx" }
+
+# Room
+room-runtime             = { module = "androidx.room:room-runtime",                             version.ref = "room"         }
+room-ktx                 = { module = "androidx.room:room-ktx",                                 version.ref = "room"         }
+room-compiler            = { module = "androidx.room:room-compiler",                            version.ref = "room"         }
+
+# WorkManager
+work-runtime-ktx         = { module = "androidx.work:work-runtime-ktx",                         version.ref = "workManager"  }
+
+# Biometric
+biometric                = { module = "androidx.biometric:biometric",                           version.ref = "biometric"    }
+
+# SQLCipher
+sqlcipher                = { module = "net.zetetic:sqlcipher-android",                          version.ref = "sqlcipher"    }
+sqlite-ktx               = { module = "androidx.sqlite:sqlite-ktx",                             version.ref = "sqlite"       }
+
+# Crypto
+liboqs                   = { module = "org.openquantumsafe:liboqs-java",                        version.ref = "liboqs"       }
+lazysodium-android       = { module = "com.goterl:lazysodium-android",                         version.ref = "lazysodiumAndroid" }
+lazysodium-java          = { module = "com.goterl:lazysodium-java",                            version.ref = "lazysodiumJava"    }
+bcprov                   = { module = "org.bouncycastle:bcprov-jdk15to18",                      version.ref = "bcprov"            }
+lifecycle-viewmodel-ktx  = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx",            version.ref = "composeLifecycle" }
+lifecycle-runtime-ktx    = { module = "androidx.lifecycle:lifecycle-runtime-ktx",              version.ref = "composeLifecycle" }
+appcompat                = { module = "androidx.appcompat:appcompat",                           version.ref = "appcompat"      }
+security-crypto          = { module = "androidx.security:security-crypto",                       version.ref = "securityCrypto" }
+androidx-test-core       = { module = "androidx.test:core",                                    version.ref = "androidxTest"   }
+androidx-test-runner     = { module = "androidx.test:runner",                                  version.ref = "androidxRunner" }
+androidx-test-ext-junit  = { module = "androidx.test.ext:junit",                               version.ref = "androidxTestExt" }
+
+backblaze-erasure        = { module = "com.backblaze:erasure",                                  version.ref = "backblaze"    }
+
+# AndroidX core
+core-ktx                 = { module = "androidx.core:core-ktx",                                 version.ref = "coreKtx"      }
+
+# Jetpack Compose BOM — controls all compose library versions
+compose-bom              = { module = "androidx.compose:compose-bom",                           version.ref = "composeBom"   }
+compose-runtime          = { module = "androidx.compose.runtime:runtime-android"                                             }
+compose-ui               = { module = "androidx.compose.ui:ui"                                                               }
+compose-ui-unit          = { module = "androidx.compose.ui:ui-unit-android"                                                 }
+compose-ui-tooling       = { module = "androidx.compose.ui:ui-tooling"                                                       }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"                                             }
+compose-foundation       = { module = "androidx.compose.foundation:foundation"                                               }
+compose-material3        = { module = "androidx.compose.material3:material3"                                                 }
+compose-material-icons   = { module = "androidx.compose.material:material-icons-extended-android"                         }
+compose-activity         = { module = "androidx.activity:activity-compose",                     version.ref = "composeActivity" }
+compose-navigation       = { module = "androidx.navigation:navigation-compose",                 version.ref = "composeNav"   }
+compose-lifecycle        = { module = "androidx.lifecycle:lifecycle-runtime-compose",           version.ref = "composeLifecycle" }
+compose-viewmodel        = { module = "androidx.lifecycle:lifecycle-viewmodel-compose",         version.ref = "composeLifecycle" }
+compose-hilt-nav         = { module = "androidx.hilt:hilt-navigation-compose",                 version.ref = "composeHilt"  }
+
+# Test
+junit                    = { module = "junit:junit",                                             version.ref = "junit"        }
+mockk                    = { module = "io.mockk:mockk",                                         version.ref = "mockk"        }
+kotest-runner            = { module = "io.kotest:kotest-runner-junit5",                          version.ref = "kotest"       }
+kotest-assertions        = { module = "io.kotest:kotest-assertions-core",                       version.ref = "kotest"       }
+
+# ZXing — QR code generation + scanning for PhysicalExchangeStep (feature:ui)
+# zxing-core: pure Java encoder. zxing-android-embedded: camera-based QR scanner Activity.
+zxing-core               = { module = "com.google.zxing:core",                                  version.ref = "zxing"        }
+zxing-android-embedded   = { module = "com.journeyapps:zxing-android-embedded",                 version.ref = "zxing-android" }
+
+[plugins]
+android-application      = { id = "com.android.application",       version.ref = "agp"     }
+android-library          = { id = "com.android.library",           version.ref = "agp"     }
+kotlin-android           = { id = "org.jetbrains.kotlin.android",  version.ref = "kotlin"  }
+hilt                     = { id = "com.google.dagger.hilt.android", version.ref = "hilt"   }
+ksp                      = { id = "com.google.devtools.ksp",       version.ref = "ksp"     }

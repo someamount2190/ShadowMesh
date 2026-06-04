@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    HCE (Host Card Emulation) service descriptor.
+    Registers the SHADOWMESH AID (F0 4D455348 00 4D5348) so the Android NFC
+    framework routes taps to ShadowMeshHceService when the peer selects this AID.
+
+    AID breakdown:
+      F0          — proprietary AID prefix (not registered with ISO)
+      4D455348    — "MESH" in ASCII
+      00          — separator / version byte
+      4D5348      — "MSH" (SHADOWMESH abbreviation)
+    9 bytes total — must exactly match NfcTransport.SHADOWMESH_AID in code.
+
+    android:requireDeviceUnlock="false" — bootstrap must work without unlock
+    so that two devices can exchange trust even if one is locked.
+    The HCE service itself gates on the active bootstrap session (coordinator
+    returns SW_NOT_FOUND outside a live session), so there is no attack surface.
+-->
+<host-apdu-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/nfc_service_description"
+    android:requireDeviceUnlock="false">
+
+    <aid-group
+        android:description="@string/aid_group_description"
+        android:category="other">
+        <aid-filter android:name="F04D455348004D5348"/>
+    </aid-group>
+
+</host-apdu-service>

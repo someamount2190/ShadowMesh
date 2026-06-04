@@ -1,0 +1,30 @@
+# Build output
+build/
+**/build/
+out/
+
+# Gradle
+.gradle/
+**/.gradle/
+gradle-app.setting
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Generated files
+gen/
+generated/
+
+# Signing keystores (never commit these)
+*.jks
+*.keystore
